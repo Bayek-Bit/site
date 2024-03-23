@@ -1,0 +1,27 @@
+:root {
+    --main-bg-color: #0E1013;
+    --black-2: #17181B;
+    --black-3: #202124;
+    --black-4: #282A2D;
+    --gray-1: #3C4043;
+    --gray-2: #5F6368;
+    --gray-3: #80868B;
+    --gray-4: #BDC6C6;
+}
+
+body {
+    background-color: var(--main-bg-color);
+}
+
+.diary {
+    display: flex;
+    align-items: center;
+    width: 450px;
+    height: 300px;
+    background-color: var(--black-2);
+    border-radius: 25px;
+}
+
+.content1 {
+    color: var(--gray-3);
+}
