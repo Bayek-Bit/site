@@ -16,12 +16,17 @@ body {
 .diary {
     display: flex;
     align-items: center;
-    width: 450px;
-    height: 300px;
+    width: 75%;
+    height: 75vh;
     background-color: var(--black-2);
     border-radius: 25px;
+    border: 2px solid var(--gray-1);
 }
 
-.content1 {
-    color: var(--gray-3);
+.btn-close {
+    width: 30px;
+    height: 30px;
+    margin-left: auto;
+    color: red;
+    background-color: var(--black-3);
 }
