@@ -26,7 +26,13 @@ body {
 .btn-close {
     width: 30px;
     height: 30px;
+    border-radius: 10px;
     margin-left: auto;
     color: red;
+    font-size: 17px;
     background-color: var(--black-3);
+}
+
+.btn-close:hover {
+    background-color: var(--black-4);
 }
