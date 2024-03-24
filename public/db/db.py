@@ -40,4 +40,4 @@ class Database_worker:
 
 if __name__ == "__main__":
     db = Database_worker()
-    db.create_table()
+    db.check_version()
