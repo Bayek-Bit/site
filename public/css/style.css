@@ -11,13 +11,16 @@
 
 body {
     background-color: var(--main-bg-color);
+    display: flex;
+    justify-content: center;
 }
 
 .diary {
     display: flex;
-    align-items: center;
+    margin-top: 12.5vh;
     width: 75%;
     height: 75vh;
+    padding: 10px;
     background-color: var(--black-2);
     border-radius: 25px;
     border: 2px solid var(--gray-1);
