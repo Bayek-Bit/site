@@ -5,7 +5,7 @@ app = FastAPI(
     title="Diary"
 )
 
-app.mount('/static', StaticFiles(directory='public', html=True))
+app.mount('/static', StaticFiles(directory="E:/www/public", html=True), name="public")
 
 @app.get("/hello")
 def hello():
