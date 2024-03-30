@@ -1,5 +1,4 @@
-// maybe some js?????
-
+console.log("xy");
 let closebtn = document.querySelector(".btn-close");
 let diary_div = document.querySelector(".diary");
 

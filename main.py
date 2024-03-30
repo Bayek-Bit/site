@@ -9,7 +9,7 @@ app = FastAPI(
 origins = [
     "http://localhost",
     "http://localhost:5500",
-    "http://localhost:8080",
+    "http://localhost:8000",
 ]
 
 app.add_middleware(
@@ -20,8 +20,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/diary")
+async def get_info():
+    return "INFO"
+
 app.mount('/', StaticFiles(directory="E:/www/public", html=True))
 
-@app.get("/")
-async def hello():
-    return "Hello!"

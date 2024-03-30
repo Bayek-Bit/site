@@ -28,15 +28,8 @@ class Database_worker:
         else:
             print("No connection available.")
 
-    def create_table(self):
-        with self.connection.cursor() as cursor:
-            cursor.execute(
-                """CREATE TABLE diary(
-                    id serial PRIMARY KEY
-                );"""
-            )
-            self.connection.commit()
-            print("[INFO] Success")
+    def load_table(self):
+        pass
 
 if __name__ == "__main__":
     db = Database_worker()
