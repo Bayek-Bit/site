@@ -10,12 +10,26 @@
     <div class="header">
         <ul>
             <li><a href="#">Главная</a></li>
-            <li><a href="/diary" class="diary_btn">Дневник</a></li>
+            <li><a id="diaryButton">Дневник</a></li>
         </ul>
     </div>
 
     <div class="diary">
         <button class="btn-close">x</button>
+        <div class="table-container">
+            <table id="diaryTable">
+                <thead>
+                    <tr>
+                        <th>Имя ученика</th>
+                        <th>Оценка</th>
+                        <th>Дата оценки</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Здесь будут добавляться строки из JSON -->
+                </tbody>
+            </table>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
