@@ -46,6 +46,7 @@ db = Database_worker(host=host, user=user, password=password, db_name=db_name)
 # async def get_info(teacher_id):
 #     classes_list = await db.get_classes_list(teacher_id=teacher_id)
 #     return {"classes_list": classes_list}
+
 @app.get("/diary/{user_id}", response_model=List[DaySchedule])
 async def get_timetable(user_id: int):
     # Для учеников
