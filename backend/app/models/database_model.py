@@ -93,5 +93,6 @@ class Marks(Base):
     id: Mapped[intpk]
     student_id: Mapped[int] = mapped_column(ForeignKey("students.id"))
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teachers.id"))
+    subject_id: Mapped[int] = mapped_column(ForeignKey("subjects.id"))
     mark: Mapped[int]
     set_date: Mapped[datetime.datetime]
