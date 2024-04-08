@@ -83,13 +83,15 @@ class Timetable(Base):
     day_of_week: Mapped[str]
     class_id: Mapped[int] = mapped_column(ForeignKey("classes.id"))
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teachers.id"))
-    start_time: Mapped[Time]
-    end_time: Mapped[Time]
+    start_time: Mapped[str]
+    end_time: Mapped[str]
     subject_id: Mapped[int] = mapped_column(ForeignKey("subjects.id"))
 
 class Marks(Base):
+    __tablename__ = "marks"
+    
     id: Mapped[intpk]
     student_id: Mapped[int] = mapped_column(ForeignKey("students.id"))
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teachers.id"))
     mark: Mapped[int]
-    set_date: Mapped[Date]
+    set_date: Mapped[datetime.datetime]

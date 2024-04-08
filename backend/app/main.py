@@ -42,11 +42,11 @@ def create_fastapi_app():
 
     return app
 
-
+app = create_fastapi_app()  
 
 if __name__ == '__main__':
     asyncio.run(main())
     uvicorn.run(
-        app="app.main:app",
+        app="main:app",
         reload=True
     )

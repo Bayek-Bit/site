@@ -15,8 +15,8 @@ class AsyncORM:
 
     @staticmethod
     async def select_teachers():
-        async with async_session_factory as session:
+        async with async_session_factory() as session:
             query = select(Teachers)
-            result = session.execute(query)
+            result = await session.execute(query)
             teachers = result.scalars().all()
             print(f"Teachers={teachers}")
