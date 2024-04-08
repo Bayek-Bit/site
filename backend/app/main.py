@@ -1,10 +1,21 @@
+import asyncio
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# database
-from db.db import Database_worker
-from db.config import host, user, password, db_name
 
-import asyncio
+import uvicorn
+
+# database
+from db.queries.orm import AsyncORM
+
+
+
+async def main():
+    await AsyncORM.create_tables()
+    await AsyncORM.select_teachers()
+
+
+
 
 def create_fastapi_app():
     app = FastAPI(
@@ -24,14 +35,18 @@ def create_fastapi_app():
                     "Authorization"],
     )
 
-# Database
-# db = Database_worker(host=host, user=user, password=password, db_name=db_name)
 
-# @app.get("/diary/{teacher_id}")
-# async def get_info(teacher_id):
-#     classes_list = await db.get_classes_list(teacher_id=teacher_id)
-#     return {"classes_list": classes_list}
+    @app.get("/diary/{user_id}")
+    async def get_timetable(user_id: int):
+        pass
 
-@app.get("/diary/{user_id}")
-async def get_timetable(user_id: int):
-    pass
+    return app
+
+
+
+if __name__ == '__main__':
+    asyncio.run(main())
+    uvicorn.run(
+        app="app.main:app",
+        reload=True
+    )

@@ -63,7 +63,9 @@ class Teachers(Base):
     father_name: Mapped[str]
 
 class Teachers_classes(Base):
-    __tablename__ = "teachers"
+    __tablename__ = "teachers_classes"
+
+    id: Mapped[intpk]
     
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teachers.id"))
     class_id: Mapped[int] = mapped_column(ForeignKey("classes.id"))
