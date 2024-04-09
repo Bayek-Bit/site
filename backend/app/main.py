@@ -1,3 +1,5 @@
+# TODO: auth and login 
+
 import asyncio
 
 from fastapi import FastAPI
