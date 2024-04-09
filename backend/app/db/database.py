@@ -1,23 +1,32 @@
 # statement for insert/update/delete 
 # query for select
-from typing import AsyncGenerator
+from typing import Annotated, AsyncGenerator
 
 from sqlalchemy import String, text, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
 from fastapi import Depends
-from fastapi_users.db import SQLAlchemyUserDatabase
+from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
 
-from models.database_model import User
-
+from sqlalchemy.orm import Mapped, mapped_column
 
 
 from db.config import settings
 
 
+
+str_256 = Annotated[str, 256]
+
 class Base(DeclarativeBase):
-    pass
+    type_annotation_map = {
+        str_256: String(256)
+    }
+
+class User(SQLAlchemyBaseUserTable[int], Base):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str]
+    role_id: Mapped[int]
 
 
 engine = create_async_engine(

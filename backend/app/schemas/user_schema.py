@@ -13,6 +13,6 @@ class UserCreate(schemas.BaseUserCreate):
     role_id: int
 
 
-# May be a bit later
-# class UserUpdate(schemas.BaseUserUpdate):
-#     pass
+class UserUpdate(schemas.BaseUserUpdate):
+    username: str
+    role_id: int

@@ -1,4 +1,4 @@
-# set limit to all varchar`s
+# set limit to all varchar`s + rewrite timetable
 
 import datetime
 
@@ -6,8 +6,7 @@ from typing import Annotated
 
 from fastapi_users.db import SQLAlchemyBaseUserTable
 
-from sqlalchemy import Table, Column
-from sqlalchemy import Integer, String, Date, Time, MetaData, text
+from sqlalchemy import text, String, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -37,14 +36,23 @@ class Role(Base):
 #     password: Mapped[str]
 #     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"))
 
-class User(SQLAlchemyBaseUserTable[int], Base):
-    id: Mapped[intpk]
-    username: Mapped[str]
-    email: Mapped[str]
-    hashed_password: Mapped[str]
-    is_active: Mapped[bool]
-    is_superuser: Mapped[bool]
-    is_verified: Mapped[bool]
+# class User(Base):
+#     __tablename__ = "user"
+    
+#     id: Mapped[intpk]
+#     email: Mapped[str] = mapped_column(
+#             String(length=320), unique=True, index=True, nullable=False
+#         )
+#     hashed_password: Mapped[str] = mapped_column(
+#         String(length=1024), nullable=False
+#     )
+#     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+#     is_superuser: Mapped[bool] = mapped_column(
+#         Boolean, default=False, nullable=False
+#         )
+#     is_verified: Mapped[bool] = mapped_column(
+#         Boolean, default=False, nullable=False
+#     )
 
 
 class Class(Base):
