@@ -1,6 +1,6 @@
 import asyncio
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi_users import fastapi_users, FastAPIUsers
@@ -68,6 +68,12 @@ def create_fastapi_app():
     @app.get("/diary/{user_id}")
     async def get_timetable(user_id: int):
         pass
+
+    current_user = fastapi_users.current_user()
+
+    @app.get("/protected-route")
+    async def protected_route(user: User = Depends(current_user)):
+        return f"Hello, {user.email}"
 
     return app
 

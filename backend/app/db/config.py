@@ -8,6 +8,16 @@ class Settings(BaseSettings):
     DB_PASS: str
     DB_NAME: str
 
+    SECRET_AUTH: str
+    SECRET_USER_MANAGER: str
+
+
+    @property
+    def SECRET_keys(self):
+        return {'auth_key': self.SECRET_AUTH,
+                'user_manager_key': self.SECRET_USER_MANAGER
+                }
+
     @property
     def DATABASE_URL_asyncpg(self):
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
