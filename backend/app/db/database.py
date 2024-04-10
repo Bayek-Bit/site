@@ -12,7 +12,7 @@ from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
 from sqlalchemy.orm import Mapped, mapped_column
 
 
-from config import settings
+from app.config import settings
 
 
 

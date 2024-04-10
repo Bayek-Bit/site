@@ -24,4 +24,14 @@ class Settings(BaseSettings):
     
     model_config = SettingsConfigDict(env_file=".env")
 
+    @property
+    def get_db_keys(self):
+        return {
+            "DB_HOST": self.DB_HOST,
+            "DB_PORT": str(self.DB_PORT),
+            "DB_USER": self.DB_USER,
+            "DB_PASS": self.DB_PASS,
+            "DB_NAME": self.DB_NAME
+        }
+
 settings = Settings()
