@@ -6,7 +6,7 @@ from fastapi_users import models, schemas, exceptions
 
 from db.database import get_user_db, User
 
-from db.config import settings
+from config import settings
 
 SECRET = settings.SECRET_keys["user_manager_key"] # from .env file
 
