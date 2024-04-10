@@ -22,3 +22,8 @@ class AsyncORM:
             result = await session.execute(query)
             teachers = result.scalars().all()
             print(f"Teachers={teachers}")
+
+    # @staticmethod
+    # async def get_students_in_class(class_id):
+    #     async with async_session_factory() as session:
+    #         query = select()

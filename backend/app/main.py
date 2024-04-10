@@ -24,8 +24,7 @@ from db.auth import auth_backend
 
 async def main():
     # await AsyncORM.create_tables()
-    # await AsyncORM.select_teachers()
-    pass
+    await AsyncORM.select_teachers()
 
 
 

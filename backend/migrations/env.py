@@ -8,6 +8,13 @@ from alembic import context
 from app.config import settings
 from app.db.database import Base
 
+# Весь код про путь к файлу я просто сп... позаимствовал
+import sys
+import pathlib
+
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
+#====================================
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
