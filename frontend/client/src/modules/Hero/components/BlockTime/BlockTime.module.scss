@@ -1,0 +1,10 @@
+.block {
+  display: block;
+  width: 400px;
+  height: 60px;
+  .items {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

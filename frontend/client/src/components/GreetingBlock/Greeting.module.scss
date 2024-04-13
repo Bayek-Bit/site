@@ -1,0 +1,53 @@
+.block {
+  width: 100%;
+  border-radius: 10px;
+  max-width: 1085px;
+  height: 250px;
+  background-color: rgb(140, 148, 255);
+  background-color: linear-gradient(
+    90deg,
+    rgba(140, 148, 255, 1) 0%,
+    rgba(144, 128, 253, 1) 45%,
+    rgba(101, 68, 172, 1) 100%
+  );
+  position: relative;
+  .items {
+    display: flex;
+    .image {
+      position: absolute;
+      bottom: 0;
+      left: 40px;
+      img {
+        width: 170px;
+        height: 280px;
+      }
+    }
+    .information {
+      margin-left: 270px;
+      padding: 60px 0;
+      .title {
+        font-size: 17px;
+        color: #fff;
+        font-family: Montserrat;
+        font-weight: 400;
+        padding-bottom: 13px;
+      }
+      .hello {
+        max-width: 450px;
+        font-size: 30px;
+        font-family: Montserrat;
+        color: #fff;
+        font-weight: 600;
+        padding-bottom: 13px;
+      }
+      .text {
+        line-height: 20px;
+        max-width: 385px;
+        font-size: 17px;
+        color: #fff;
+        font-family: Montserrat;
+        font-weight: 400;
+      }
+    }
+  }
+}

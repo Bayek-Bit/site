@@ -1,0 +1,15 @@
+nav {
+  background-color: #fff;
+  overflow: hidden;
+  position: relative;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.navbar {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}

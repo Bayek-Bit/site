@@ -1,0 +1,54 @@
+.calendar {
+  width: 380px;
+  background-color: #fff;
+  border-radius: 10px;
+  margin-bottom: 70px;
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    h3 {
+      font-weight: 500;
+      font-family: Montserrat;
+    }
+    p {
+      font-weight: 500;
+      font-family: Montserrat;
+    }
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    text-align: center;
+    justify-content: space-between;
+    li {
+      margin-top: 25px;
+      position: relative;
+      z-index: 2;
+    }
+  }
+  .days {
+    font-weight: 400;
+    font-family: Montserrat;
+    li.inactive {
+      color: #ccc;
+    }
+  }
+  .dates {
+    li.today {
+      color: #fff;
+      &::before {
+        content: '';
+        width: 2rem;
+        height: 2rem;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #000;
+        border-radius: 50%;
+        z-index: -1;
+      }
+    }
+  }
+}

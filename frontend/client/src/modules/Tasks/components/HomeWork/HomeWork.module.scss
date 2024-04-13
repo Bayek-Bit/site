@@ -1,0 +1,18 @@
+.main {
+  margin-top: 60px;
+  .title {
+    font-family: Montserrat;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 30px;
+    margin-bottom: 20px;
+  }
+  .items {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+    .block {
+      width: 400px;
+    }
+  }
+}

@@ -1,0 +1,57 @@
+.block {
+  width: 400px;
+  background-color: #f9f9f9;
+  height: 100%;
+
+  border-radius: 4px;
+  cursor: pointer;
+  .items {
+    padding: 24px;
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      padding-bottom: 10px;
+      .information {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        .avatar {
+          display: block;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background-color: black;
+        }
+        .name {
+          color: #121214;
+          font-size: 15px;
+          font-family: Montserrat;
+          font-weight: 500;
+          max-width: 165px;
+        }
+      }
+      .date {
+        color: #969696;
+        font-size: 12px;
+        font-family: Montserrat;
+        font-weight: 500;
+      }
+    }
+    .title {
+      color: #0173c1;
+      font-family: Montserrat;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 22px;
+      padding-bottom: 10px;
+    }
+    .text {
+      color: #565656;
+      font-family: Montserrat;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 21px;
+    }
+  }
+}

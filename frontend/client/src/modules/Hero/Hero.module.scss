@@ -1,0 +1,16 @@
+.hero {
+  padding-top: 36px;
+  width: 100%;
+  .content {
+    display: flex;
+    justify-content: space-between;
+    .time {
+      .title {
+        font-size: 19px;
+        font-family: Montserrat;
+        padding-bottom: 20px;
+        font-weight: 500;
+      }
+    }
+  }
+}
