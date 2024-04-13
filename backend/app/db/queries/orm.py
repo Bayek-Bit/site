@@ -2,6 +2,7 @@ from sqlalchemy import Integer, insert, select, text
 
 
 from db.database import Base, engine, async_session_factory
+from db.database import User
 from models.database_model import Student, Teacher
 
 
@@ -22,6 +23,11 @@ class AsyncORM:
             result = await session.execute(query)
             teachers = result.scalars().all()
             print(f"Teachers={teachers}")
+
+    @staticmethod
+    async def get_user(email: str, password: str):
+        async with async_session_factory() as session:
+            user = session.get(User, email, password)
 
     # @staticmethod
     # async def get_students_in_class(class_id):

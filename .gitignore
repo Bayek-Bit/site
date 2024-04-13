@@ -1,5 +1,4 @@
 alembic.ini
-venv
 .env
 __pycache__
 main.cpython-310.pyc

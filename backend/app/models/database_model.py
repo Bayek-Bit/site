@@ -6,7 +6,7 @@ from typing import Annotated
 
 from fastapi_users.db import SQLAlchemyBaseUserTable
 
-from sqlalchemy import text, String, Boolean
+from sqlalchemy import text, String, Boolean, JSON
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 

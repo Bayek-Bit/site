@@ -1,6 +1,6 @@
 import asyncio
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi_users import fastapi_users, FastAPIUsers
@@ -21,6 +21,9 @@ from db.database import User
 #auth
 from db.auth import auth_backend
 
+#pydantic
+from pydantic import BaseModel
+
 
 async def main():
     # await AsyncORM.create_tables()
@@ -39,8 +42,10 @@ def create_fastapi_app():
     [auth_backend],
     )
 
+    # Зависит от порта фронта
     origins = [
-        "http://127.0.0.1:5500",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
     ]
 
     app.add_middleware(
@@ -48,8 +53,7 @@ def create_fastapi_app():
         allow_origins=origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "DELETE", "PATCH", "PUT"],
-        allow_headers=["Content-Type", "Set-Cookie", "Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
-                    "Authorization"],
+        allow_headers=["*"],
     )
 
     app.include_router(
@@ -64,10 +68,27 @@ def create_fastapi_app():
     tags=["auth"],
     )
 
+    # class ConfigData(BaseModel):
+    #     data: str
+    #     status: int
+    #     statusText: str
+    #     headers: dict
+    #     config: dict
+    #     request: dict
 
-    @app.get("/diary/{user_id}")
-    async def get_timetable(user_id: int):
-        pass
+    @app.post("/diary/login")
+    async def login(request: Request):
+        data = await request.json()
+        print(data)
+        return "Hello"
+
+    @app.get("/diary/refresh")
+    async def refresh():
+        return "Hello"
+    
+    @app.post("/diary/logout")
+    async def logout():
+        return "Logout"
 
     current_user = fastapi_users.current_user()
 
