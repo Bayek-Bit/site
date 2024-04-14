@@ -24,10 +24,11 @@ class AsyncORM:
             teachers = result.scalars().all()
             print(f"Teachers={teachers}")
 
-    @staticmethod
-    async def get_user(email: str, password: str):
-        async with async_session_factory() as session:
-            user = session.get(User, email, password)
+    # @staticmethod
+    # async def get_user(email: str):
+    #     async with async_session_factory() as session:
+    #         user = await session.get(User, email)
+    #         print(user)
 
     # @staticmethod
     # async def get_students_in_class(class_id):

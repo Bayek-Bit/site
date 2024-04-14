@@ -10,6 +10,8 @@ import uvicorn
 # database
 from db.queries.orm import AsyncORM
 
+# from db.queries.core import Core
+
 #user manager
 from db.manager import get_user_manager
 
@@ -26,8 +28,9 @@ from pydantic import BaseModel
 
 
 async def main():
-    # await AsyncORM.create_tables()
-    await AsyncORM.select_teachers()
+    # await AsyncORM.get_user("twink.7w1nk@yandex.ru")
+    # await Core.get_user_by_email(email="2135162gu@example.com")
+    pass
 
 
 
@@ -53,7 +56,7 @@ def create_fastapi_app():
         allow_origins=origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "DELETE", "PATCH", "PUT"],
-        allow_headers=["*"],
+        allow_headers=["Content-Type", "Set-Cookie", "Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Authorization"],
     )
 
     app.include_router(
@@ -76,19 +79,24 @@ def create_fastapi_app():
     #     config: dict
     #     request: dict
 
-    @app.post("/diary/login")
-    async def login(request: Request):
-        data = await request.json()
-        print(data)
-        return "Hello"
+    # @app.post("/diary/login")
+    # async def login(request: Request):
+    #     data = await request.json()
+    #     _email = data["email"]
+    #     _password = data["password"]
+    #     user_role = await Core.login(email=_email)
+    #     if user_role:
+    #         return {"user_role": user_role}
+    #     else:
+    #         return None
 
-    @app.get("/diary/refresh")
-    async def refresh():
-        return "Hello"
+    # @app.get("/diary/refresh")
+    # async def refresh():
+    #     return "Hello"
     
-    @app.post("/diary/logout")
-    async def logout():
-        return "Logout"
+    # @app.post("/diary/logout")
+    # async def logout():
+    #     return "Logout"
 
     current_user = fastapi_users.current_user()
 
