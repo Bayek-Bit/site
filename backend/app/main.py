@@ -1,3 +1,5 @@
+# TODO: check info about routes in fastapi_users / check arguments of login function in auth router
+
 import asyncio
 
 from fastapi import FastAPI, Depends, Request, Response
@@ -74,12 +76,13 @@ def create_fastapi_app():
 
     current_user = fastapi_users.current_user()
 
-    @app.get("/diary/refresh")
+    @app.get("/refresh")
     async def get_cookie(request: Request, cookie_name: str = "token"):
         # Получаем куку
         if cookie_name:
             cookie_value = request.cookies.get(cookie_name)
-            return {"cookie_value": cookie_value}
+            if cookie_value:
+                return {"cookie_value": cookie_value}
         else:
             return {"message": "No cookie name provided"}
     
