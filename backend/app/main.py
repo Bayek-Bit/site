@@ -1,6 +1,6 @@
 import asyncio
 
-from fastapi import FastAPI, Depends, Request
+from fastapi import FastAPI, Depends, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi_users import fastapi_users, FastAPIUsers
@@ -74,6 +74,15 @@ def create_fastapi_app():
 
     current_user = fastapi_users.current_user()
 
+    @app.get("/diary/refresh")
+    async def get_cookie(request: Request, cookie_name: str = "token"):
+        # Получаем куку
+        if cookie_name:
+            cookie_value = request.cookies.get(cookie_name)
+            return {"cookie_value": cookie_value}
+        else:
+            return {"message": "No cookie name provided"}
+    
     @app.get("/protected-route")
     async def protected_route(user: User = Depends(current_user)):
         return f"Hello, {user.username}"
