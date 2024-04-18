@@ -57,7 +57,7 @@ const Auth: React.FC = () => {
   };
   return (
     <div className={styles.main}>
-      <div>
+      <div className={styles.form}>
         <div className={styles.logo}>
           <Logo />
         </div>

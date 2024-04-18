@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from './HomeWorkBlock.module.scss';
 
-type HomeWorkBlockProps = {
-  control: boolean | undefined;
-  complete: boolean | undefined;
-  time: boolean | undefined;
-};
+interface HomeWorkBlockProps {
+  control: boolean;
+  complete: boolean;
+  time?: boolean;
+}
 const HomeWorkBlock: React.FC<HomeWorkBlockProps> = ({ control, complete, time }) => {
   return (
     <div className={styles.block}>
@@ -19,13 +19,16 @@ const HomeWorkBlock: React.FC<HomeWorkBlockProps> = ({ control, complete, time }
             {time ? <div>кабинет, время</div> : <div className={styles.work}>параграф, 18</div>}
           </div>
         </div>
-        {complete && (
+        {complete ? (
           <form action="">
             <input type="checkbox" className={styles.complete} id="complete" />
             <label htmlFor="complete"></label>
           </form>
+        ) : control ? (
+          <div>Дата публикации</div>
+        ) : (
+          ''
         )}
-        {control && <div>Дата публикации</div>}
       </div>
     </div>
   );

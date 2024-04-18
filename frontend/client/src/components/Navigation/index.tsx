@@ -1,29 +1,29 @@
 import React, { useState } from 'react';
 import styles from './Navigation.module.scss';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
+import classNames from 'classnames';
 
 type RouteItem = {
   name: string;
   path: string;
 };
 const Navigation: React.FC = () => {
-  const [categoryId, setCategoryId] = useState(0);
-  const onClickCategory = (id: number) => {
-    setCategoryId(id);
-  };
-
   const routeList: RouteItem[] = [
-    { name: 'Главная', path: '/' },
+    { name: 'Главная', path: '/home' },
     { name: 'Оценки', path: '/grade' },
   ];
-
+  function getClassName({ isActive }: { isActive: boolean }): string {
+    return classNames(styles.link, {
+      [styles.active]: isActive,
+    });
+  }
   return (
     <ul className={styles.menu}>
       {routeList.map((el, i) => (
-        <li key={el.name} onClick={() => onClickCategory(i)} className={styles.link}>
-          <Link to={el.path} className={`${styles.link} ${categoryId == i ? styles.active : ''}`}>
+        <li key={el.path} className={styles.item}>
+          <NavLink to={el.path} className={getClassName}>
             {el.name}
-          </Link>
+          </NavLink>
         </li>
       ))}
     </ul>

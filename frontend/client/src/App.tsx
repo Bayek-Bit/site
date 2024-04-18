@@ -1,17 +1,21 @@
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
-import Grade from './pages/Grade';
-import Registration from './pages/Registration';
+import React, { useContext, useEffect } from 'react';
+import { Route, Routes, BrowserRouter } from 'react-router-dom';
+
+import AppRouter from './app/AppRouter';
 import './app/styles/style.scss';
+import { Context } from './main';
 const App: React.FC = () => {
+  const { store } = useContext(Context);
+  useEffect(() => {
+    if (localStorage.getItem('auth')) {
+      store.setAuth(true);
+    }
+  }, []);
   return (
     <>
-      <Routes>
-        <Route path="/home" element={<Home />} />
-        <Route path="/grade" element={<Grade />} />
-        <Route path="/" element={<Registration />} />
-      </Routes>
+      <BrowserRouter>
+        <AppRouter />
+      </BrowserRouter>
     </>
   );
 };

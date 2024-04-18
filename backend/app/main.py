@@ -76,6 +76,11 @@ def create_fastapi_app():
 
     current_user = fastapi_users.current_user()
 
+    @app.post("/get-info")
+    async def get_info(json_data: dict):
+        print(json_data)
+        return 200
+    
     @app.get("/refresh")
     async def get_cookie(request: Request, cookie_name: str = "token"):
         # Получаем куку

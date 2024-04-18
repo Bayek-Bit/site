@@ -1,11 +1,10 @@
 import React from 'react';
-import '../app/styles/style.scss';
-import { Header } from '../modules/Header/index';
+import MainLayout from '../layouts/MainLayout';
 
 const Grade: React.FC = () => {
   return (
     <>
-      <Header />
+      <MainLayout>ghghghg</MainLayout>
     </>
   );
 };

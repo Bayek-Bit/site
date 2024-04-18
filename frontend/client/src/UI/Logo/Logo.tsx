@@ -1,10 +1,11 @@
 import React from 'react';
 import styles from './Logo.module.scss';
+import { Link } from 'react-router-dom';
 
 const Logo: React.FC = () => {
   return (
     <div className={styles.logo}>
-      <a href="/"> School Diary </a>
+      <Link to="/home"> School Diary </Link>
     </div>
   );
 };
