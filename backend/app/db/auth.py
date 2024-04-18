@@ -4,7 +4,7 @@ from fastapi_users.authentication import AuthenticationBackend
 
 from config import settings
 
-cookie_transport = CookieTransport(cookie_name="bonds", cookie_max_age=3600)
+cookie_transport = CookieTransport(cookie_name="token", cookie_max_age=3600)
 
 SECRET = settings.SECRET_keys["auth_key"] # dont even try :)
 

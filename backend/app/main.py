@@ -10,7 +10,7 @@ import uvicorn
 # database
 from db.queries.orm import AsyncORM
 
-# from db.queries.core import Core
+from db.queries.core import Core
 
 #user manager
 from db.manager import get_user_manager
@@ -26,11 +26,12 @@ from db.auth import auth_backend
 #pydantic
 from pydantic import BaseModel
 
+#datetime
+from datetime import datetime
+
 
 async def main():
-    # await AsyncORM.get_user("twink.7w1nk@yandex.ru")
-    # await Core.get_user_by_email(email="2135162gu@example.com")
-    pass
+    await Core.get_marks(1, week_start=datetime(2024, 4, 15), week_end=datetime(2024, 4, 19))
 
 
 
@@ -71,39 +72,18 @@ def create_fastapi_app():
     tags=["auth"],
     )
 
-    # class ConfigData(BaseModel):
-    #     data: str
-    #     status: int
-    #     statusText: str
-    #     headers: dict
-    #     config: dict
-    #     request: dict
-
-    # @app.post("/diary/login")
-    # async def login(request: Request):
-    #     data = await request.json()
-    #     _email = data["email"]
-    #     _password = data["password"]
-    #     user_role = await Core.login(email=_email)
-    #     if user_role:
-    #         return {"user_role": user_role}
-    #     else:
-    #         return None
-
-    # @app.get("/diary/refresh")
-    # async def refresh():
-    #     return "Hello"
-    
-    # @app.post("/diary/logout")
-    # async def logout():
-    #     return "Logout"
-
     current_user = fastapi_users.current_user()
 
     @app.get("/protected-route")
     async def protected_route(user: User = Depends(current_user)):
-        return f"Hello, {user.email}"
-
+        return f"Hello, {user.username}"
+    
+    @app.post("/diary/get_marks/{student_id}/{week_start}/{week_end}")
+    async def protected_route(student_id: int, week_start: datetime, week_end: datetime, user: User = Depends(current_user)):
+        print(student_id, week_start, week_end)
+        marks = await Core.get_marks(student_id=student_id, week_start=week_start, week_end=week_end)
+        return marks
+        
     return app
 
 app = create_fastapi_app()  
