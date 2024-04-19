@@ -10,7 +10,7 @@ from sqlalchemy import text, String, Boolean, JSON
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
-from db.database import Base
+from database import Base
 
 
 

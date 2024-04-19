@@ -1,8 +1,8 @@
 from sqlalchemy import Integer, insert, select, text
 
 
-from db.database import Base, engine, async_session_factory
-from db.database import User
+from database import Base, engine, async_session_factory
+from auth.models import User
 from models.database_model import Student, Teacher
 
 

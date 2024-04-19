@@ -15,18 +15,14 @@ from db.queries.orm import AsyncORM
 from db.queries.core import Core
 
 #user manager
-from db.manager import get_user_manager
+from auth.manager import get_user_manager
 
 #schema
 from schemas.user_schema import UserCreate, UserRead
 
-from db.database import User
-
 #auth
-from db.auth import auth_backend
-
-#pydantic
-from pydantic import BaseModel
+from auth.base_config import auth_backend, fastapi_users
+from auth.models import User
 
 #datetime
 from datetime import datetime
@@ -43,11 +39,6 @@ def create_fastapi_app():
         title="Diary"
     )
     
-    fastapi_users = FastAPIUsers[User, int](
-    get_user_manager,
-    [auth_backend],
-    )
-
     # Зависит от порта фронта
     origins = [
         "http://localhost:5173",

@@ -2,7 +2,7 @@
 
 from sqlalchemy import text
 
-from db.database import engine
+from database import engine
 
 from datetime import datetime
 
