@@ -12,6 +12,6 @@ export default class AuthService {
     });
   }
   static async logout(): Promise<void> {
-    return $api.post('/auth/jwt/logout');
+    return $api.post('/auth/jwt/logout', { withCredentials: true });
   }
 }

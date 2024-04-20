@@ -8,7 +8,7 @@ from auth.manager import get_user_manager
 from auth.models import User
 from config import settings
 
-cookie_transport = CookieTransport(cookie_name="token", cookie_max_age=3600)
+cookie_transport = CookieTransport(cookie_name="bonds", cookie_max_age=3600, cookie_samesite="strict")
 
 SECRET = settings.SECRET_keys["auth_key"] # dont even try :)
 

@@ -1,37 +1,33 @@
-# TODO: check info about routes in fastapi_users / check arguments of login function in auth router
-
 import asyncio
+from typing import Optional
 
-from fastapi import FastAPI, Depends, Request, Response
+from fastapi import FastAPI, Depends, Request, Response, HTTPException, Cookie
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi_users import fastapi_users, FastAPIUsers
 
 import uvicorn
 
-# database
+# Queries
 from db.queries.orm import AsyncORM
-
 from db.queries.core import Core
 
 #user manager
 from auth.manager import get_user_manager
 
 #schema
-from schemas.user_schema import UserCreate, UserRead
+from auth.schemas import UserCreate, UserRead
 
 #auth
 from auth.base_config import auth_backend, fastapi_users
 from auth.models import User
 
-#datetime
+# datetime как тип данных для передачи даты (год, месяц, день)
 from datetime import datetime
 
 
 async def main():
     await Core.get_marks(1, week_start=datetime(2024, 4, 15), week_end=datetime(2024, 4, 19))
-
-
 
 
 def create_fastapi_app():
@@ -66,25 +62,12 @@ def create_fastapi_app():
     )
 
     current_user = fastapi_users.current_user()
-
-    @app.post("/get-info")
-    async def get_info(json_data: dict):
-        print(json_data)
-        return 200
     
     @app.get("/refresh")
-    async def get_cookie(request: Request, cookie_name: str = "token"):
-        # Получаем куку
-        if cookie_name:
-            cookie_value = request.cookies.get(cookie_name)
-            if cookie_value:
-                return {"cookie_value": cookie_value}
-        else:
-            return {"message": "No cookie name provided"}
-    
-    @app.get("/protected-route")
     async def protected_route(user: User = Depends(current_user)):
-        return f"Hello, {user.username}"
+        return {"username": user.username,
+                "is_active": user.is_active,
+                "role_id": user.role_id}
     
     @app.post("/diary/get_marks/{student_id}/{week_start}/{week_end}")
     async def protected_route(student_id: int, week_start: datetime, week_end: datetime, user: User = Depends(current_user)):

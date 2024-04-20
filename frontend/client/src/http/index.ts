@@ -7,12 +7,12 @@ const $api = axios.create({
   baseURL: API_URL,
 });
 
-$api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    document.cookie = `token=${token}`;
-  }
-  return config;
-});
+// $api.interceptors.request.use((config) => {
+//   const token = localStorage.getItem('bonds');
+//   if (token) {
+//     document.cookie = `token=${token}`;
+//   }
+//   return config;
+// });
 
 export default $api;
