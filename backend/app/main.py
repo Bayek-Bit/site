@@ -27,8 +27,8 @@ from datetime import datetime
 
 
 async def main():
-    await Core.get_marks(1, week_start=datetime(2024, 4, 15), week_end=datetime(2024, 4, 19))
-
+    # await Core.get_marks(1, week_start=datetime(2024, 4, 15), week_end=datetime(2024, 4, 19))
+    await AsyncORM.get_classes_by_teacher_id(teacher_id=1)
 
 def create_fastapi_app():
     app = FastAPI(

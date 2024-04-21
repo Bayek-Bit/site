@@ -1,5 +1,3 @@
-# set limit to all varchar`s + rewrite timetable
-
 import datetime
 
 from typing import Annotated
@@ -8,18 +6,16 @@ from fastapi_users.db import SQLAlchemyBaseUserTable
 
 from sqlalchemy import text, String, Boolean, JSON
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
-
-
 
 intpk = Annotated[int, mapped_column(primary_key=True)]
 created_at = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]
 updated_at = Annotated[datetime.datetime, mapped_column(
-        server_default=text("TIMEZONE('utc', now())"),
-        onupdate=datetime.datetime.now(datetime.timezone.utc),
-    )]
+    server_default=text("TIMEZONE('utc', now())"),
+    onupdate=datetime.datetime.now(datetime.timezone.utc),
+)]
 
 
 class Role(Base):
@@ -28,31 +24,17 @@ class Role(Base):
     id: Mapped[intpk]
     name: Mapped[str]
 
-# class Users(Base):
-#     __tablename__ = "users"
 
-#     id: Mapped[intpk]
-#     username: Mapped[str]
-#     password: Mapped[str]
-#     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"))
+class TeacherClass(Base):
+    __tablename__ = "teacher_class"
 
-# class User(Base):
-#     __tablename__ = "user"
-    
-#     id: Mapped[intpk]
-#     email: Mapped[str] = mapped_column(
-#             String(length=320), unique=True, index=True, nullable=False
-#         )
-#     hashed_password: Mapped[str] = mapped_column(
-#         String(length=1024), nullable=False
-#     )
-#     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-#     is_superuser: Mapped[bool] = mapped_column(
-#         Boolean, default=False, nullable=False
-#         )
-#     is_verified: Mapped[bool] = mapped_column(
-#         Boolean, default=False, nullable=False
-#     )
+    id: Mapped[intpk]
+
+    teacher_id: Mapped[int] = mapped_column(ForeignKey("teacher.id"))
+    class_id: Mapped[int] = mapped_column(ForeignKey("class.id"))
+
+    Teacher: Mapped["Teacher"] = relationship()
+    Class: Mapped["Class"] = relationship()
 
 
 class Class(Base):
@@ -60,6 +42,8 @@ class Class(Base):
 
     id: Mapped[intpk]
     name: Mapped[str]
+
+    Teachers: Mapped[list["TeacherClass"]] = relationship()
 
 
 class Student(Base):
@@ -82,23 +66,19 @@ class Teacher(Base):
     last_name: Mapped[str]
     father_name: Mapped[str]
 
-class Teacher_class(Base):
-    __tablename__ = "teacher_class"
+    Classes: Mapped[list["TeacherClass"]] = relationship()
 
-    id: Mapped[intpk]
-    
-    teacher_id: Mapped[int] = mapped_column(ForeignKey("teacher.id"))
-    class_id: Mapped[int] = mapped_column(ForeignKey("class.id"))
 
 class Subject(Base):
     __tablename__ = "subject"
-    
+
     id: Mapped[intpk]
     name: Mapped[str]
 
+
 class Timetable(Base):
     __tablename__ = "timetable"
-    
+
     id: Mapped[intpk]
     day_of_week: Mapped[str]
     class_id: Mapped[int] = mapped_column(ForeignKey("class.id"))
@@ -107,9 +87,10 @@ class Timetable(Base):
     end_time: Mapped[str]
     subject_id: Mapped[int] = mapped_column(ForeignKey("subject.id"))
 
+
 class Mark(Base):
     __tablename__ = "mark"
-    
+
     id: Mapped[intpk]
     student_id: Mapped[int] = mapped_column(ForeignKey("student.id"))
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teacher.id"))
