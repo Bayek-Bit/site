@@ -5,14 +5,17 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from app.config import DB_HOST,DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
-from app.database import Base
-
-# Весь код про путь к файлу я просто сп... позаимствовал
 import sys
 import pathlib
 
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
+
+
+from app.config import DB_HOST, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
+from app.database import Base
+from app.models import *
+
+
 #====================================
 
 # this is the Alembic Config object, which provides
@@ -37,6 +40,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
