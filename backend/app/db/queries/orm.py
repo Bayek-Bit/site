@@ -46,15 +46,16 @@ class AsyncORM:
                 # Extract relevant information from the timetable object
                 day_of_week = timetable_obj.day_of_week
                 subject_name = timetable_obj.Subject.name
+                lesson_number = timetable_obj.lesson_number
                 start_time = timetable_obj.start_time
                 end_time = timetable_obj.end_time
 
                 # Add subject details to the list for the day of the week
-                timetable_dict[day_of_week].append((subject_name, start_time, end_time))
+                timetable_dict[day_of_week].append((subject_name, start_time, end_time, lesson_number))
 
-                # Sort subjects by start time
+                # Sort subjects within each day by lesson number
             for day, subjects in timetable_dict.items():
-                timetable_dict[day] = sorted(subjects, key=lambda x: x[1])  # Sorting by start time
+                subjects.sort(key=lambda x: x[3])  # Sort by lesson number (index 3)
 
                 # Convert defaultdict to a regular dictionary
             timetable_dict = dict(timetable_dict)

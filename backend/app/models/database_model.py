@@ -83,7 +83,7 @@ class Timetable(Base):
     day_of_week: Mapped[str]
     class_id: Mapped[int] = mapped_column(ForeignKey("class.id"))
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teacher.id"))
-    subject_number: Mapped[int]
+    lesson_number: Mapped[int]
     start_time: Mapped[str]
     end_time: Mapped[str]
     subject_id: Mapped[int] = mapped_column(ForeignKey("subject.id"))
