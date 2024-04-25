@@ -29,6 +29,10 @@ from datetime import datetime
 async def main():
     # await Core.get_marks(1, week_start=datetime(2024, 4, 15), week_end=datetime(2024, 4, 19))
     await AsyncORM.create_tables()
+    # await AsyncORM.get_students_in_class(class_id=1)
+    # await AsyncORM.get_timetable(class_id=1)
+    pass
+
 
 def create_fastapi_app():
     app = FastAPI(
@@ -76,6 +80,12 @@ def create_fastapi_app():
         print(student_id, week_start, week_end)
         marks = await Core.get_marks(student_id=student_id, week_start=week_start, week_end=week_end)
         return marks
+
+    # Only teacher can get students list like this. So add check.
+    @app.get("/diary/get_students_by_class/{class_id}")
+    async def get_students(class_id: int, user: User = Depends(current_user)):
+        students = await AsyncORM.get_students_in_class(class_id)
+        return students
 
     return app
 

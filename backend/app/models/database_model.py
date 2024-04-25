@@ -43,7 +43,7 @@ class Class(Base):
     id: Mapped[intpk]
     name: Mapped[str]
 
-    Teachers: Mapped[list["TeacherClass"]] = relationship()
+    Teachers: Mapped[list["TeacherClass"]] = relationship(overlaps="Class")
 
 
 class Student(Base):
@@ -66,7 +66,7 @@ class Teacher(Base):
     last_name: Mapped[str]
     father_name: Mapped[str]
 
-    Classes: Mapped[list["TeacherClass"]] = relationship()
+    Classes: Mapped[list["TeacherClass"]] = relationship(overlaps="Teacher")
 
 
 class Subject(Base):
@@ -83,9 +83,13 @@ class Timetable(Base):
     day_of_week: Mapped[str]
     class_id: Mapped[int] = mapped_column(ForeignKey("class.id"))
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teacher.id"))
+    subject_number: Mapped[int]
     start_time: Mapped[str]
     end_time: Mapped[str]
     subject_id: Mapped[int] = mapped_column(ForeignKey("subject.id"))
+
+    Teacher: Mapped["Teacher"] = relationship("Teacher")
+    Subject: Mapped["Subject"] = relationship("Subject")
 
 
 class Mark(Base):

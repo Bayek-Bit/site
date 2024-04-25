@@ -5,10 +5,10 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# import sys
-# import pathlib
-#
-# sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
+import sys
+import pathlib
+
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
 
 from app.config import DB_HOST, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS

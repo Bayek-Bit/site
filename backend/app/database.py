@@ -6,7 +6,7 @@ from sqlalchemy import String, text, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
-from config import DB_NAME, DB_HOST, DB_PASS, DB_PORT, DB_USER
+from app.config import DB_NAME, DB_HOST, DB_PASS, DB_PORT, DB_USER
 
 
 str_256 = Annotated[str, 256]
@@ -17,7 +17,7 @@ class Base(DeclarativeBase):
         str_256: String(256)
     }
 
-    repr_cols_num = 3
+    repr_cols_num = 5
     repr_cols = tuple()
 
     def __repr__(self):

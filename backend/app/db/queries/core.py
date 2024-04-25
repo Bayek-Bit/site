@@ -9,13 +9,8 @@ from datetime import datetime
 from collections import defaultdict
 
 
-
 class Core:
-    
-    # @staticmethod
-    # async def add_student():
-    #     pass
-    
+
     @staticmethod
     async def get_marks(student_id: int, week_start: datetime, week_end: datetime):
         async with engine.connect() as conn:
@@ -27,8 +22,8 @@ class Core:
                         AND mark.set_date >= :week_start
                         AND mark.set_date <= :week_end
                      """)
-            query = query.bindparams(student_id=student_id, 
-                                     week_start=week_start, 
+            query = query.bindparams(student_id=student_id,
+                                     week_start=week_start,
                                      week_end=week_end)
             result = await conn.execute(query)
             result = result.fetchall()
@@ -42,8 +37,7 @@ class Core:
 
             # Получаем словарь с днями недели, оценками за каждый день и названию предмета, по которому получена оценка
             return marks_by_day
-        
-        
+
     # @staticmethod
     # async def get_user_role(email):
     #     async with engine.connect() as conn:
