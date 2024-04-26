@@ -30,7 +30,7 @@ async def main():
     # await Core.get_marks(1, week_start=datetime(2024, 4, 15), week_end=datetime(2024, 4, 19))
     # await AsyncORM.create_tables()
     # await AsyncORM.get_students_in_class(class_id=1)
-    await AsyncORM.get_timetable(class_id=1)
+    # await AsyncORM.get_timetable_and_marks_by_week(class_id=1, week_start=datetime(2024, 4, 15), week_end=datetime(2024, 4, 19))
     pass
 
 
@@ -86,6 +86,11 @@ def create_fastapi_app():
     async def get_students(class_id: int, user: User = Depends(current_user)):
         students = await AsyncORM.get_students_in_class(class_id)
         return students
+
+    @app.get("/diary/get_timetable/{class_id}/{week_start}/{week_end}")
+    async def get_timetable(class_id: int, week_start: datetime, week_end: datetime):
+        timetable = await AsyncORM.get_timetable_and_marks_by_week(class_id, week_start, week_end)
+        return timetable
 
     return app
 

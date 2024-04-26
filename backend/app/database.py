@@ -17,7 +17,7 @@ class Base(DeclarativeBase):
         str_256: String(256)
     }
 
-    repr_cols_num = 5
+    repr_cols_num = 10
     repr_cols = tuple()
 
     def __repr__(self):

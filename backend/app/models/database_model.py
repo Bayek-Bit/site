@@ -75,6 +75,8 @@ class Subject(Base):
     id: Mapped[intpk]
     name: Mapped[str]
 
+    Mark: Mapped["Mark"] = relationship("Mark")
+
 
 class Timetable(Base):
     __tablename__ = "timetable"
@@ -101,3 +103,5 @@ class Mark(Base):
     subject_id: Mapped[int] = mapped_column(ForeignKey("subject.id"))
     mark: Mapped[int]
     set_date: Mapped[datetime.datetime]
+
+    Subject: Mapped["Subject"] = relationship("Subject")
