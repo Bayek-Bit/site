@@ -1,5 +1,6 @@
 from sqlalchemy import Integer, insert, select, text
 from sqlalchemy.orm import selectinload, joinedload
+from sqlalchemy.orm.exc import NoResultFound
 
 from database import Base, engine, async_session_factory
 from auth.models import User
@@ -8,6 +9,8 @@ from models.database_model import Student, Teacher, TeacherClass, Class, Timetab
 from datetime import datetime
 
 from collections import defaultdict
+
+import json
 
 
 class AsyncORM:
@@ -26,6 +29,19 @@ class AsyncORM:
             teachers = result.scalars().all()
             print(f"Teachers={teachers}")
 
+    @staticmethod
+    async def get_teachers_timetable(teacher_id: int):
+        async with async_session_factory() as session:
+            timetable_query = (
+                select(Timetable)
+                .where(Timetable.teacher_id == teacher_id)
+            )
+
+            timetable_result = await session.execute(timetable_query)
+            timetable_result = timetable_result.scalars().all()
+
+            return timetable_result
+
     # Student Функция возвращает словарь - расписание на неделю.
     # На каждый день недели - свое кол-во уроков.
     # У каждой записи есть номер урока по счёту, время начала-конца, название и имя учителя
@@ -35,14 +51,15 @@ class AsyncORM:
     # '8:50', '9:30', 'Математика', 'Math Math Math`s'), (3, '9:40', '10:20', 'Русский язык', 'Rus Rus Russian'), (4,
     # '10:40', '11:20', 'Русский язык', 'Rus Rus Russian'), (5, '11:40', '12:20', 'Литература', 'Lit Lit Literature')]}
     @staticmethod
-    async def get_timetable_and_marks_by_week(class_id: int, week_start: datetime, week_end: datetime):
+    async def get_timetable_and_marks_by_week(user_id: int, week_start: datetime, week_end: datetime):
         timetable_dict = defaultdict(list)
 
         async with async_session_factory() as session:
             # Получаем расписание класса
             timetable_query = (
                 select(Timetable)
-                .where(Timetable.class_id == class_id)
+                .join(Student, Timetable.class_id == Student.class_id)
+                .where(Student.user_id == user_id)
                 .options(joinedload(Timetable.Teacher), joinedload(Timetable.Subject))
             )
 
@@ -50,13 +67,14 @@ class AsyncORM:
             timetable_result = timetable_result.scalars().all()
 
             # Получаем оценки
-            query = (
+            mark_query = (
                 select(Mark)
-                .where(Mark.set_date >= week_start, Mark.set_date <= week_end)
+                .join(Student, Mark.student_id == Student.id)
+                .where(Student.user_id == user_id, Mark.set_date >= week_start, Mark.set_date <= week_end)
                 .options(joinedload(Mark.Subject))
             )
 
-            marks_result = await session.execute(query)
+            marks_result = await session.execute(mark_query)
             marks_result = marks_result.scalars().all()
 
             week_days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
@@ -86,7 +104,6 @@ class AsyncORM:
                 mark_info = mark.mark
                 for lesson in timetable_dict[week_day]:
                     if lesson["subject_name"] == subject_name:
-                        print(lesson)
                         lesson["marks"].append(mark_info)
                         break
 

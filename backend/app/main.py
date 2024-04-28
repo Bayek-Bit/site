@@ -1,7 +1,7 @@
 import asyncio
 from typing import Optional
 
-from fastapi import FastAPI, Depends, Request, Response, HTTPException, Cookie
+from fastapi import FastAPI, Depends, Request, Response, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi_users import fastapi_users, FastAPIUsers
@@ -74,23 +74,44 @@ def create_fastapi_app():
                 "is_active": user.is_active,
                 "role_id": user.role_id}
 
-    @app.post("/diary/get_marks/{student_id}/{week_start}/{week_end}")
-    async def protected_route(student_id: int, week_start: datetime, week_end: datetime,
-                              user: User = Depends(current_user)):
-        print(student_id, week_start, week_end)
-        marks = await Core.get_marks(student_id=student_id, week_start=week_start, week_end=week_end)
-        return marks
+    @app.get("/operations/get_student/{user_id}")
+    async def get_student(user_id: int):
+        student = await AsyncORM.get_student(user_id)
+        return student
 
-    # Only teacher can get students list like this. So add check.
-    @app.get("/diary/get_students_by_class/{class_id}")
+    # @app.post("/diary/get_marks/{student_id}/{week_start}/{week_end}")
+    # async def protected_route(student_id: int, week_start: datetime, week_end: datetime,
+    #                           user: User = Depends(current_user)):
+    #     marks = await Core.get_marks(student_id=student_id, week_start=week_start, week_end=week_end)
+    #     return marks
+
+    @app.post("/diary/get_teachers_timetable/{teacher_id}")
+    async def get_teachers_timetable(teacher_id: int, user: User = Depends(current_user)):
+        if user.role_id == 3:
+            timetable = await AsyncORM.get_teachers_timetable(teacher_id)
+            return timetable
+        else:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only teachers can access this resource.")
+
+    # Only teacher can get students list like this. (In future) Admin also can use this
+    @app.post("/diary/get_students_by_class/{class_id}")
     async def get_students(class_id: int, user: User = Depends(current_user)):
-        students = await AsyncORM.get_students_in_class(class_id)
-        return students
+        if user.role_id == 3:
+            students = await AsyncORM.get_students_in_class(class_id)
+            return students
+        else:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only teachers can access this resource.")
 
-    @app.get("/diary/get_timetable/{class_id}/{week_start}/{week_end}")
-    async def get_timetable(class_id: int, week_start: datetime, week_end: datetime):
-        timetable = await AsyncORM.get_timetable_and_marks_by_week(class_id, week_start, week_end)
-        return timetable
+    @app.post("/diary/get_students_timetable/{user_id}/{week_start}/{week_end}")
+    async def get_timetable(user_id: int,
+                            week_start: datetime,
+                            week_end: datetime,
+                            user: User = Depends(current_user)):
+        if user.role_id == 2:
+            timetable = await AsyncORM.get_timetable_and_marks_by_week(user_id, week_start, week_end)
+            return timetable
+        else:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only students can access this resource.")
 
     return app
 
