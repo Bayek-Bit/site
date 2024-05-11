@@ -1,10 +1,10 @@
 import datetime
 
-from typing import Annotated
+from typing import Annotated, List, Optional
 
 from fastapi_users.db import SQLAlchemyBaseUserTable
 
-from sqlalchemy import text, String, Boolean, JSON
+from sqlalchemy import text, String
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -33,9 +33,6 @@ class TeacherClass(Base):
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teacher.id"))
     class_id: Mapped[int] = mapped_column(ForeignKey("class.id"))
 
-    Teacher: Mapped["Teacher"] = relationship()
-    Class: Mapped["Class"] = relationship()
-
 
 class Class(Base):
     __tablename__ = "class"
@@ -43,7 +40,8 @@ class Class(Base):
     id: Mapped[intpk]
     name: Mapped[str]
 
-    Teachers: Mapped[list["TeacherClass"]] = relationship(overlaps="Class")
+    teachers = relationship("Teacher", secondary="teacher_class")
+    # teachers: Mapped[list["TeacherClass"]] = relationship("TeacherClass", back_populates="class_")
 
 
 class Student(Base):
@@ -65,8 +63,10 @@ class Teacher(Base):
     first_name: Mapped[str]
     last_name: Mapped[str]
     father_name: Mapped[str]
+    # В secondary указывается именно название таблицы (__tablename__)
+    classes_taught = relationship("Class", secondary="teacher_class", overlaps="teachers")
 
-    Classes: Mapped[list["TeacherClass"]] = relationship(overlaps="Teacher")
+    lessons: Mapped[list["Timetable"]] = relationship("Timetable", back_populates="Teacher")
 
 
 class Subject(Base):
@@ -75,7 +75,7 @@ class Subject(Base):
     id: Mapped[intpk]
     name: Mapped[str]
 
-    Mark: Mapped["Mark"] = relationship("Mark")
+    marks: Mapped[list["Mark"]] = relationship("Mark", back_populates="Subject", lazy="dynamic")
 
 
 class Timetable(Base):
@@ -86,6 +86,7 @@ class Timetable(Base):
     class_id: Mapped[int] = mapped_column(ForeignKey("class.id"))
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teacher.id"))
     lesson_number: Mapped[int]
+    classroom_number: Mapped[int]
     start_time: Mapped[str]
     end_time: Mapped[str]
     subject_id: Mapped[int] = mapped_column(ForeignKey("subject.id"))
@@ -104,4 +105,4 @@ class Mark(Base):
     mark: Mapped[int]
     set_date: Mapped[datetime.datetime]
 
-    Subject: Mapped["Subject"] = relationship("Subject")
+    Subject: Mapped["Subject"] = relationship("Subject", back_populates="marks")

@@ -3,7 +3,7 @@ from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy.orm.exc import NoResultFound
 
 from database import Base, engine, async_session_factory
-from auth.models import User
+
 from models.database_model import Student, Teacher, TeacherClass, Class, Timetable, Mark
 
 from datetime import datetime
@@ -29,20 +29,59 @@ class AsyncORM:
             teachers = result.scalars().all()
             print(f"Teachers={teachers}")
 
+    # Классы, которые обучает учитель
     @staticmethod
-    async def get_teachers_timetable(teacher_id: int):
+    async def get_classes(user_id: int):
         async with async_session_factory() as session:
-            timetable_query = (
-                select(Timetable)
-                .where(Timetable.teacher_id == teacher_id)
+            query = (
+                select(Teacher)
+                .where(Teacher.user_id == user_id)
+                .options(selectinload(Teacher.classes_taught))
+            )
+            result = await session.execute(query)
+            result = result.scalars().one()
+            return result
+
+    # Учитель может получить своё расписание.
+    @staticmethod
+    async def get_teachers_timetable(user_id: int):
+        async with async_session_factory() as session:
+            teacher_timetable_query = (
+                select(Teacher)
+                .where(Teacher.user_id == user_id)
+                .options(selectinload(Teacher.lessons).selectinload(Timetable.Subject))
             )
 
-            timetable_result = await session.execute(timetable_query)
-            timetable_result = timetable_result.scalars().all()
+            timetable_result = await session.execute(teacher_timetable_query)
+            timetable_result = timetable_result.scalars().one()
 
-            return timetable_result
+            lessons = timetable_result.lessons
 
-    # Student Функция возвращает словарь - расписание на неделю.
+            lessons_json = []
+            for lesson in lessons:
+                lesson_dict = {
+                    "id": lesson.id,
+                    "day_of_week": lesson.day_of_week,
+                    "class_id": lesson.class_id,
+                    "teacher_id": lesson.teacher_id,
+                    "lesson_number": lesson.lesson_number,
+                    "classroom_number": lesson.classroom_number,
+                    "start_time": lesson.start_time,
+                    "end_time": lesson.end_time,
+                    "subject": {
+                        "id": lesson.Subject.id,
+                        "name": lesson.Subject.name
+                    }
+                }
+                lessons_json.append(lesson_dict)
+
+            # Преобразование списка словарей в JSON-строку
+            timetable_json_str = json.dumps(lessons_json)
+
+            return timetable_json_str
+
+    # (Student)
+    # Функция возвращает словарь - расписание на неделю.
     # На каждый день недели - свое кол-во уроков.
     # У каждой записи есть номер урока по счёту, время начала-конца, название и имя учителя
     # Example:
@@ -56,14 +95,14 @@ class AsyncORM:
 
         async with async_session_factory() as session:
             # Получаем расписание класса
-            timetable_query = (
+            student_timetable_query = (
                 select(Timetable)
                 .join(Student, Timetable.class_id == Student.class_id)
                 .where(Student.user_id == user_id)
                 .options(joinedload(Timetable.Teacher), joinedload(Timetable.Subject))
             )
 
-            timetable_result = await session.execute(timetable_query)
+            timetable_result = await session.execute(student_timetable_query)
             timetable_result = timetable_result.scalars().all()
 
             # Получаем оценки
@@ -85,6 +124,7 @@ class AsyncORM:
                 subject_name = timetable_obj.Subject.name
                 teacher_name = f"{timetable_obj.Teacher.first_name} {timetable_obj.Teacher.last_name} {timetable_obj.Teacher.father_name}"
                 lesson_number = timetable_obj.lesson_number
+                classroom_number = timetable_obj.classroom_number
                 start_time = timetable_obj.start_time
                 end_time = timetable_obj.end_time
 
@@ -95,6 +135,7 @@ class AsyncORM:
                     'end_time': end_time,
                     'subject_name': subject_name,
                     'teacher_name': teacher_name,
+                    'classroom_number': classroom_number,
                     'marks': []  # Placeholder for marks
                 })
 

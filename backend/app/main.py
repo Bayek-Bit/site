@@ -25,13 +25,11 @@ from auth.models import User
 # datetime как тип данных для передачи даты (год, месяц, день)
 from datetime import datetime
 
+from db.queries.test import TestQueries
+
 
 async def main():
-    # await Core.get_marks(1, week_start=datetime(2024, 4, 15), week_end=datetime(2024, 4, 19))
-    # await AsyncORM.create_tables()
-    # await AsyncORM.get_students_in_class(class_id=1)
-    # await AsyncORM.get_timetable_and_marks_by_week(class_id=1, week_start=datetime(2024, 4, 15), week_end=datetime(2024, 4, 19))
-    pass
+    await AsyncORM.get_teachers_timetable(user_id=3)
 
 
 def create_fastapi_app():
@@ -74,22 +72,19 @@ def create_fastapi_app():
                 "is_active": user.is_active,
                 "role_id": user.role_id}
 
-    @app.get("/operations/get_student/{user_id}")
-    async def get_student(user_id: int):
-        student = await AsyncORM.get_student(user_id)
-        return student
-
-    # @app.post("/diary/get_marks/{student_id}/{week_start}/{week_end}")
-    # async def protected_route(student_id: int, week_start: datetime, week_end: datetime,
-    #                           user: User = Depends(current_user)):
-    #     marks = await Core.get_marks(student_id=student_id, week_start=week_start, week_end=week_end)
-    #     return marks
-
-    @app.post("/diary/get_teachers_timetable/{teacher_id}")
-    async def get_teachers_timetable(teacher_id: int, user: User = Depends(current_user)):
+    @app.post("/diary/get_teachers_timetable")
+    async def get_teachers_timetable(user: User = Depends(current_user)):
         if user.role_id == 3:
-            timetable = await AsyncORM.get_teachers_timetable(teacher_id)
-            return timetable
+            teachers_timetable = await AsyncORM.get_teachers_timetable(user.id)
+            return teachers_timetable
+        else:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only teachers can access this resource.")
+
+    @app.post("/diary/get_classes")
+    async def get_classes(user: User = Depends(current_user)):
+        if user.role_id == 3:
+            classes = await AsyncORM.get_classes(user_id=user.id)
+            return classes
         else:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only teachers can access this resource.")
 
@@ -103,12 +98,13 @@ def create_fastapi_app():
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only teachers can access this resource.")
 
     @app.post("/diary/get_students_timetable/{user_id}/{week_start}/{week_end}")
-    async def get_timetable(user_id: int,
-                            week_start: datetime,
-                            week_end: datetime,
-                            user: User = Depends(current_user)):
+    async def get_timetable(
+            week_start: datetime,
+            week_end: datetime,
+            user: User = Depends(current_user)
+    ):
         if user.role_id == 2:
-            timetable = await AsyncORM.get_timetable_and_marks_by_week(user_id, week_start, week_end)
+            timetable = await AsyncORM.get_timetable_and_marks_by_week(user.id, week_start, week_end)
             return timetable
         else:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only students can access this resource.")

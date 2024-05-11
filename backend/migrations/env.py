@@ -5,16 +5,14 @@ from sqlalchemy import pool
 
 from alembic import context
 
+import os
 import sys
-import pathlib
 
-sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
+sys.path.append(os.path.join(sys.path[0], "app"))
 
-
-from app.config import DB_HOST, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
-from app.database import Base
-from app.models import *
-
+from config import DB_HOST, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
+from database import Base
+from models import *
 
 #====================================
 

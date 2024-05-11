@@ -2,4 +2,5 @@ old.txt
 venv
 .env
 __pycache__
+test.py
 main.cpython-310.pyc
