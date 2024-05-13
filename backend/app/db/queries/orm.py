@@ -1,10 +1,10 @@
-from sqlalchemy import Integer, insert, select, text
+from sqlalchemy import Integer, insert, select, text, and_
 from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy.orm.exc import NoResultFound
 
 from database import Base, engine, async_session_factory
 
-from models.database_model import Student, Teacher, TeacherClass, Class, Timetable, Mark
+from models.database_model import Student, Teacher, TeacherClass, Class, Timetable, Mark, TeacherSubject, Subject
 
 from datetime import datetime
 
@@ -28,6 +28,54 @@ class AsyncORM:
             result = await session.execute(query)
             teachers = result.scalars().all()
             print(f"Teachers={teachers}")
+
+    # (Teacher)
+    # Оценки
+    @staticmethod
+    async def set_mark(teachers_user_id: int, students_user_id: int, subject_id: int, mark: int, set_date: datetime):
+        async with async_session_factory() as session:
+            # Ищем учителя, присоединяя предметы, которым он обучает, и классы, которые он обучает.
+            teacher_query = (
+                select(Teacher)
+                .where(Teacher.user_id == teachers_user_id)
+                .options(joinedload(Teacher.taught_subjects))
+                .options(joinedload(Teacher.classes_taught))
+            )
+            try:
+                result = await session.execute(teacher_query)
+                result = result.unique().scalars().one()
+            except NoResultFound:
+                return {"error": "Not allowed."}
+            # Получаем студента, подгружая класс, в котором он обучается
+            try:
+                student = await session.execute(
+                    select(Student).where(Student.user_id == students_user_id).options(joinedload(Student.class_)))
+                student = student.scalars().one()
+            except NoResultFound:
+                return {"error": "Student not found."}
+
+            # id Класса, в котором обучается студент
+            student_class_id = student.class_.id
+
+            # id всех предметов, которым обучает учитель
+            ts_ids = [ts.id for ts in result.taught_subjects]
+            # id всех классов, которые обучает учитель
+            tc_ids = [tc.id for tc in result.classes_taught]
+
+            if (student_class_id in tc_ids) and (subject_id in ts_ids):
+                stmt = (
+                    insert(Mark).
+                    values(
+                        student_id=student.id,
+                        teacher_id=result.id,
+                        subject_id=subject_id,
+                        mark=mark,
+                        set_date=set_date  # Над датой нужно подумать
+                    )
+                )
+                await session.execute(stmt)
+                await session.commit()
+                return 200
 
     # Классы, которые обучает учитель
     @staticmethod
@@ -83,12 +131,7 @@ class AsyncORM:
     # (Student)
     # Функция возвращает словарь - расписание на неделю.
     # На каждый день недели - свое кол-во уроков.
-    # У каждой записи есть номер урока по счёту, время начала-конца, название и имя учителя
-    # Example:
-    # {'Вторник': [(1, '8:00', '8:40', 'Математика', 'Math Math Math`s')],
-    # 'Понедельник': [(1, '8:00', '8:40', 'Математика', 'Math Math Math`s'), (2,
-    # '8:50', '9:30', 'Математика', 'Math Math Math`s'), (3, '9:40', '10:20', 'Русский язык', 'Rus Rus Russian'), (4,
-    # '10:40', '11:20', 'Русский язык', 'Rus Rus Russian'), (5, '11:40', '12:20', 'Литература', 'Lit Lit Literature')]}
+    # У каждой записи есть номер урока по счёту, время начала-конца, название предмета, имя учителя и кабинет
     @staticmethod
     async def get_timetable_and_marks_by_week(user_id: int, week_start: datetime, week_end: datetime):
         timetable_dict = defaultdict(list)
@@ -149,39 +192,6 @@ class AsyncORM:
                         break
 
         return timetable_dict
-
-    # @staticmethod
-    # async def get_timetable(class_id: int):
-    #     timetable_dict = defaultdict(list)
-    #
-    #     async with async_session_factory() as session:
-    #         query = (
-    #             select(Timetable)
-    #             .where(Timetable.class_id == class_id)
-    #             .options(joinedload(Timetable.Teacher), joinedload(Timetable.Subject))
-    #         )
-    #
-    #         result = await session.execute(query)
-    #         result = result.scalars().all()
-    #
-    #         for timetable_obj in result:
-    #             # Extract relevant information from the timetable object
-    #             day_of_week = timetable_obj.day_of_week
-    #             subject_name = timetable_obj.Subject.name
-    #             lesson_number = timetable_obj.lesson_number
-    #             start_time = timetable_obj.start_time
-    #             end_time = timetable_obj.end_time
-    #
-    #             # Add subject details to the list for the day of the week
-    #             timetable_dict[day_of_week].append((lesson_number, start_time, end_time, subject_name))
-    #
-    #             # Sort subjects within each day by lesson number
-    #         for day, subjects in timetable_dict.items():
-    #             subjects.sort(key=lambda x: x[0])  # Sort by lesson number (index 0)
-    #
-    #             # Convert defaultdict to a regular dictionary
-    #         timetable_dict = dict(timetable_dict)
-    #         print(timetable_dict)
 
     # Получаем классы, которые обучает учитель. Example: {1: '6A', 2: '10A', 5: '2А'}
     @staticmethod

@@ -29,7 +29,7 @@ from db.queries.test import TestQueries
 
 
 async def main():
-    await AsyncORM.get_teachers_timetable(user_id=3)
+    pass
 
 
 def create_fastapi_app():
@@ -96,6 +96,20 @@ def create_fastapi_app():
             return students
         else:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only teachers can access this resource.")
+
+    @app.post("/diary/set_mark/{students_user_id}/{subject_id}/{mark}")
+    async def set_mark(students_user_id: int, subject_id: int, mark: int, user: User = Depends(current_user)):
+        if user.role_id == 3:
+            set_date = datetime.now()
+            print(set_date)
+            await AsyncORM.set_mark(
+                    teachers_user_id=user.id,
+                    students_user_id=students_user_id,
+                    subject_id=subject_id,
+                    mark=mark, set_date=set_date
+            )
+        else:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only students can access this resource.")
 
     @app.post("/diary/get_students_timetable/{user_id}/{week_start}/{week_end}")
     async def get_timetable(

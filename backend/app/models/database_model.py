@@ -40,6 +40,8 @@ class Class(Base):
     id: Mapped[intpk]
     name: Mapped[str]
 
+    students = relationship("Student", back_populates="class_")
+
     teachers = relationship("Teacher", secondary="teacher_class")
     # teachers: Mapped[list["TeacherClass"]] = relationship("TeacherClass", back_populates="class_")
 
@@ -54,6 +56,10 @@ class Student(Base):
     father_name: Mapped[str]
     class_id: Mapped[int] = mapped_column(ForeignKey("class.id", ondelete="CASCADE"))
 
+    class_ = relationship("Class", back_populates="students")
+
+    marks = relationship("Mark", back_populates="student", lazy="dynamic")
+
 
 class Teacher(Base):
     __tablename__ = "teacher"
@@ -63,19 +69,42 @@ class Teacher(Base):
     first_name: Mapped[str]
     last_name: Mapped[str]
     father_name: Mapped[str]
+
+    # Предметы, которым обучает учитель
+    taught_subjects = relationship("TeacherSubject", back_populates="teacher")
+
     # В secondary указывается именно название таблицы (__tablename__)
+    # Классы, которые обучает учитель
     classes_taught = relationship("Class", secondary="teacher_class", overlaps="teachers")
 
-    lessons: Mapped[list["Timetable"]] = relationship("Timetable", back_populates="Teacher")
+    # Расписание предметов, которым обучает учитель
+    lessons = relationship("Timetable", back_populates="Teacher")
+
+    # Оценки, которые поставил учитель по всем его предметам
+    marks = relationship("Mark", back_populates="teacher", lazy="dynamic")
 
 
+# for students
 class Subject(Base):
     __tablename__ = "subject"
 
     id: Mapped[intpk]
     name: Mapped[str]
 
-    marks: Mapped[list["Mark"]] = relationship("Mark", back_populates="Subject", lazy="dynamic")
+    teachers = relationship("TeacherSubject", back_populates="subject")
+
+    marks = relationship("Mark", back_populates="subject", lazy="dynamic")
+
+
+class TeacherSubject(Base):
+    __tablename__ = "teacher_subject"
+
+    id: Mapped[intpk]
+    teacher_id: Mapped[int] = mapped_column(ForeignKey('teacher.id'))
+    subject_id: Mapped[int] = mapped_column(ForeignKey('subject.id'))
+
+    teacher = relationship("Teacher", back_populates="taught_subjects")
+    subject = relationship("Subject", back_populates="teachers")
 
 
 class Timetable(Base):
@@ -91,8 +120,8 @@ class Timetable(Base):
     end_time: Mapped[str]
     subject_id: Mapped[int] = mapped_column(ForeignKey("subject.id"))
 
-    Teacher: Mapped["Teacher"] = relationship("Teacher")
-    Subject: Mapped["Subject"] = relationship("Subject")
+    Teacher = relationship("Teacher")
+    Subject = relationship("Subject")
 
 
 class Mark(Base):
@@ -105,4 +134,6 @@ class Mark(Base):
     mark: Mapped[int]
     set_date: Mapped[datetime.datetime]
 
-    Subject: Mapped["Subject"] = relationship("Subject", back_populates="marks")
+    student = relationship("Student", back_populates="marks")
+    teacher = relationship("Teacher", back_populates="marks")
+    subject = relationship("Subject", back_populates="marks")
