@@ -1,5 +1,5 @@
-from sqlalchemy import Integer, insert, select, text, and_
-from sqlalchemy.orm import selectinload, joinedload
+from sqlalchemy import Integer, insert, update, select, text, and_
+from sqlalchemy.orm import selectinload, joinedload, with_loader_criteria
 from sqlalchemy.orm.exc import NoResultFound
 
 from database import Base, engine, async_session_factory
@@ -42,6 +42,52 @@ class AsyncORM:
                 .options(joinedload(Teacher.classes_taught))
             )
             try:
+                teacher = await session.execute(teacher_query)
+                teacher = teacher.unique().scalars().one()
+            except NoResultFound:
+                return {"error": "Not allowed."}
+            # Получаем студента, подгружая класс, в котором он обучается
+            try:
+                student = await session.execute(
+                    select(Student).where(Student.user_id == students_user_id).options(joinedload(Student.class_)))
+                student = student.scalars().one()
+            except NoResultFound:
+                return {"error": "Student not found."}
+
+            # id Класса, в котором обучается студент
+            student_class_id = student.class_.id
+
+            # id всех предметов, которым обучает учитель
+            ts_ids = [ts.id for ts in teacher.taught_subjects]
+            # id всех классов, которые обучает учитель
+            tc_ids = [tc.id for tc in teacher.classes_taught]
+
+            if (student_class_id in tc_ids) and (subject_id in ts_ids):
+                stmt = (
+                    insert(Mark).
+                    values(
+                        student_id=student.id,
+                        teacher_id=teacher.id,
+                        subject_id=subject_id,
+                        mark=mark,
+                        set_date=set_date  # Над датой нужно подумать
+                    )
+                )
+                await session.execute(stmt)
+                await session.commit()
+
+    @staticmethod
+    async def update_mark(teachers_user_id: int, students_user_id: int, subject_id: int, mark_id: int,
+                          updated_mark: int, update_date: datetime):
+        async with async_session_factory() as session:
+            # Ищем учителя, присоединяя предметы, которым он обучает, и классы, которые он обучает.
+            teacher_query = (
+                select(Teacher)
+                .where(Teacher.user_id == teachers_user_id)
+                .options(joinedload(Teacher.taught_subjects))
+                .options(joinedload(Teacher.classes_taught))
+            )
+            try:
                 result = await session.execute(teacher_query)
                 result = result.unique().scalars().one()
             except NoResultFound:
@@ -64,31 +110,57 @@ class AsyncORM:
 
             if (student_class_id in tc_ids) and (subject_id in ts_ids):
                 stmt = (
-                    insert(Mark).
-                    values(
-                        student_id=student.id,
-                        teacher_id=result.id,
-                        subject_id=subject_id,
-                        mark=mark,
-                        set_date=set_date  # Над датой нужно подумать
+                    update(Mark)
+                    .where(Mark.id == mark_id)
+                    .values(
+                        mark=updated_mark,
+                        set_date=update_date
                     )
                 )
                 await session.execute(stmt)
                 await session.commit()
-                return 200
+
+    # Функция позволяет получить оценки всех студентов в классе.
+    @staticmethod
+    async def get_students_marks_table(
+            teachers_user_id: int,
+            subject_id: int,
+            class_id: int,
+            date_from: datetime,
+            date_to: datetime
+    ):
+        async with async_session_factory() as session:
+            teacher_query = (
+                select(Teacher)
+                .where(Teacher.user_id == teachers_user_id)
+                .options(selectinload(Teacher.classes_taught).selectinload(Class.students).selectinload(Student.marks),
+                         with_loader_criteria(Mark, and_(Mark.set_date >= date_from, Mark.set_date <= date_to)))
+            )
+            teacher = await session.execute(teacher_query)
+            teacher = teacher.scalars().one()
+
+            current_class = None
+            for i in teacher.classes_taught:
+                if i.id == class_id:
+                    current_class = i
+                    break
+
+            students_table = []
+            if current_class:
+                return current_class
 
     # Классы, которые обучает учитель
     @staticmethod
     async def get_classes(user_id: int):
         async with async_session_factory() as session:
-            query = (
+            teacher_query = (
                 select(Teacher)
                 .where(Teacher.user_id == user_id)
                 .options(selectinload(Teacher.classes_taught))
             )
-            result = await session.execute(query)
-            result = result.scalars().one()
-            return result
+            teacher = await session.execute(teacher_query)
+            teacher = teacher.scalars().one()
+            return teacher.classes_taught
 
     # Учитель может получить своё расписание.
     @staticmethod
@@ -185,7 +257,7 @@ class AsyncORM:
             for mark in marks_result:
                 week_day = week_days[mark.set_date.day - week_start.day]
                 subject_name = mark.Subject.name
-                mark_info = mark.mark
+                mark_info = [mark.mark, mark.id]
                 for lesson in timetable_dict[week_day]:
                     if lesson["subject_name"] == subject_name:
                         lesson["marks"].append(mark_info)

@@ -29,7 +29,8 @@ from db.queries.test import TestQueries
 
 
 async def main():
-    pass
+    await AsyncORM.get_students_marks_table(teachers_user_id=3, subject_id=1, class_id=1,
+                                            date_from=datetime(2024, 4, 15, 0,0,0,0), date_to=datetime(2024, 4, 16,0,0,0,0))
 
 
 def create_fastapi_app():
@@ -101,13 +102,30 @@ def create_fastapi_app():
     async def set_mark(students_user_id: int, subject_id: int, mark: int, user: User = Depends(current_user)):
         if user.role_id == 3:
             set_date = datetime.now()
-            print(set_date)
             await AsyncORM.set_mark(
-                    teachers_user_id=user.id,
-                    students_user_id=students_user_id,
-                    subject_id=subject_id,
-                    mark=mark, set_date=set_date
+                teachers_user_id=user.id,
+                students_user_id=students_user_id,
+                subject_id=subject_id,
+                mark=mark, set_date=set_date
             )
+            return 200
+        else:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only students can access this resource.")
+
+    @app.post("/diary/update_mark/{students_user_id}/{subject_id}/{mark_id}/{updated_mark}")
+    async def update_mark(students_user_id: int, subject_id: int, mark_id: int, updated_mark: int,
+                          user: User = Depends(current_user)):
+        if user.role_id == 3:
+            update_date = datetime.now()
+            await AsyncORM.update_mark(
+                teachers_user_id=user.id,
+                students_user_id=students_user_id,
+                subject_id=subject_id,
+                mark_id=mark_id,
+                updated_mark=updated_mark,
+                update_date=update_date
+            )
+            return 200
         else:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only students can access this resource.")
 
@@ -117,9 +135,29 @@ def create_fastapi_app():
             week_end: datetime,
             user: User = Depends(current_user)
     ):
-        if user.role_id == 2:
+        if user.role_id == 3:
             timetable = await AsyncORM.get_timetable_and_marks_by_week(user.id, week_start, week_end)
             return timetable
+        else:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only students can access this resource.")
+
+    @app.post("/diary/get_students_marks_table/{subject_id}/{class_id}/{date_from}/{date_to}")
+    async def get_students_marks_table(
+            subject_id: int,
+            class_id: int,
+            date_from: datetime,
+            date_to: datetime,
+            user: User = Depends(current_user)
+    ):
+        if user.role_id == 3:
+            table = await AsyncORM.get_students_marks_table(
+                teachers_user_id=user.id,
+                subject_id=subject_id,
+                class_id=class_id,
+                date_from=date_from,
+                date_to=date_to
+            )
+            return table
         else:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only students can access this resource.")
 

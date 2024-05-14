@@ -58,7 +58,7 @@ class Student(Base):
 
     class_ = relationship("Class", back_populates="students")
 
-    marks = relationship("Mark", back_populates="student", lazy="dynamic")
+    marks = relationship("Mark", back_populates="student")
 
 
 class Teacher(Base):
