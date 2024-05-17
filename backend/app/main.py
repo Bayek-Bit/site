@@ -27,6 +27,9 @@ from datetime import datetime
 
 from db.queries.test import TestQueries
 
+# teacher
+from teacher_diary import router as teacher_router
+
 
 async def main():
     await AsyncORM.get_students_marks_table(teachers_user_id=3, subject_id=1, class_id=1,
@@ -64,6 +67,8 @@ def create_fastapi_app():
         prefix="/auth",
         tags=["auth"],
     )
+
+    app.include_router(teacher_router)
 
     current_user = fastapi_users.current_user()
 

@@ -145,7 +145,6 @@ class AsyncORM:
                     current_class = i
                     break
 
-            students_table = []
             if current_class:
                 return current_class
 
