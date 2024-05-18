@@ -12,7 +12,7 @@ sys.path.append(os.path.join(sys.path[0], "app"))
 
 from config import DB_HOST, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
 from database import Base
-from models import *
+from models.database_model import *
 
 #====================================
 

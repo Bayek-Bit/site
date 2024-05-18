@@ -4,11 +4,12 @@ from typing import Annotated, List, Optional
 
 from fastapi_users.db import SQLAlchemyBaseUserTable
 
-from sqlalchemy import text, String
+from sqlalchemy import CheckConstraint, text, String, Integer
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
+
 
 intpk = Annotated[int, mapped_column(primary_key=True)]
 created_at = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]
@@ -66,9 +67,9 @@ class Teacher(Base):
 
     id: Mapped[intpk]
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"))
-    first_name: Mapped[str]
-    last_name: Mapped[str]
-    father_name: Mapped[str]
+    first_name: Mapped[str] = mapped_column(String(50))
+    last_name: Mapped[str] = mapped_column(String(50))
+    father_name: Mapped[str] = mapped_column(String(50))
 
     # Предметы, которым обучает учитель
     taught_subjects = relationship("TeacherSubject", back_populates="teacher")
@@ -89,7 +90,7 @@ class Subject(Base):
     __tablename__ = "subject"
 
     id: Mapped[intpk]
-    name: Mapped[str]
+    name: Mapped[str] = mapped_column(String(100))
 
     teachers = relationship("TeacherSubject", back_populates="subject")
 
@@ -111,13 +112,13 @@ class Timetable(Base):
     __tablename__ = "timetable"
 
     id: Mapped[intpk]
-    day_of_week: Mapped[str]
+    day_of_week: Mapped[str] = mapped_column(String(50))
     class_id: Mapped[int] = mapped_column(ForeignKey("class.id"))
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teacher.id"))
     lesson_number: Mapped[int]
     classroom_number: Mapped[int]
-    start_time: Mapped[str]
-    end_time: Mapped[str]
+    start_time: Mapped[str] = mapped_column(String(5))
+    end_time: Mapped[str] = mapped_column(String(5))
     subject_id: Mapped[int] = mapped_column(ForeignKey("subject.id"))
 
     Teacher = relationship("Teacher")
@@ -132,8 +133,28 @@ class Mark(Base):
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teacher.id"))
     subject_id: Mapped[int] = mapped_column(ForeignKey("subject.id"))
     mark: Mapped[int]
+    attendance: Mapped[Optional[str]] = mapped_column(String(1), nullable=True)
     set_date: Mapped[datetime.datetime]
+    update_date: Mapped[Optional[datetime.datetime]] = mapped_column(nullable=True)
 
     student = relationship("Student", back_populates="marks")
     teacher = relationship("Teacher", back_populates="marks")
     subject = relationship("Subject", back_populates="marks")
+
+    __table_args__ = (
+        CheckConstraint(
+            '(mark IS NOT NULL AND attendance IS NULL) OR (mark IS NULL AND attendance IS NOT NULL)',
+            name='check_mark_or_attendance'
+        ),
+    )
+
+
+class Homework(Base):
+    __tablename__ = "homework"
+
+    id: Mapped[intpk]
+    teacher_id: Mapped[int] = mapped_column(ForeignKey("teacher.id"))
+    class_id: Mapped[int] = mapped_column(ForeignKey("class.id"))
+    subject_id: Mapped[int] = mapped_column(ForeignKey("subject.id"))
+
+    task: Mapped[str] = mapped_column(String(250))

@@ -10,6 +10,8 @@ from datetime import datetime
 
 from collections import defaultdict
 
+from typing import Optional
+
 import json
 
 
@@ -32,7 +34,8 @@ class AsyncORM:
     # (Teacher)
     # Оценки
     @staticmethod
-    async def set_mark(teachers_user_id: int, students_user_id: int, subject_id: int, mark: int, set_date: datetime):
+    async def set_mark(teachers_user_id: int, students_user_id: int, subject_id: int, set_date: datetime,
+                       attendance: Optional[str] = None, mark: Optional[int] = None):
         async with async_session_factory() as session:
             # Ищем учителя, присоединяя предметы, которым он обучает, и классы, которые он обучает.
             teacher_query = (
@@ -69,6 +72,7 @@ class AsyncORM:
                         student_id=student.id,
                         teacher_id=teacher.id,
                         subject_id=subject_id,
+                        attendance=attendance,
                         mark=mark,
                         set_date=set_date  # Над датой нужно подумать
                     )
@@ -114,7 +118,7 @@ class AsyncORM:
                     .where(Mark.id == mark_id)
                     .values(
                         mark=updated_mark,
-                        set_date=update_date
+                        update_date=update_date
                     )
                 )
                 await session.execute(stmt)
@@ -134,7 +138,7 @@ class AsyncORM:
                 select(Teacher)
                 .where(Teacher.user_id == teachers_user_id)
                 .options(selectinload(Teacher.classes_taught).selectinload(Class.students).selectinload(Student.marks),
-                         with_loader_criteria(Mark, and_(Mark.set_date >= date_from, Mark.set_date <= date_to)))
+                         with_loader_criteria(Mark, and_(Mark.set_date >= date_from, Mark.set_date <= date_to, Mark.subject_id == subject_id)))
             )
             teacher = await session.execute(teacher_query)
             teacher = teacher.scalars().one()
