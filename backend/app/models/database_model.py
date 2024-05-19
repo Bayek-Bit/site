@@ -44,7 +44,6 @@ class Class(Base):
     students = relationship("Student", back_populates="class_")
 
     teachers = relationship("Teacher", secondary="teacher_class")
-    # teachers: Mapped[list["TeacherClass"]] = relationship("TeacherClass", back_populates="class_")
 
 
 class Student(Base):
@@ -132,7 +131,7 @@ class Mark(Base):
     student_id: Mapped[int] = mapped_column(ForeignKey("student.id"))
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teacher.id"))
     subject_id: Mapped[int] = mapped_column(ForeignKey("subject.id"))
-    mark: Mapped[int]
+    mark: Mapped[Optional[int]]
     attendance: Mapped[Optional[str]] = mapped_column(String(1), nullable=True)
     set_date: Mapped[datetime.datetime]
     update_date: Mapped[Optional[datetime.datetime]] = mapped_column(nullable=True)

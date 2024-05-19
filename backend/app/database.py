@@ -6,7 +6,7 @@ from sqlalchemy import String, text, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
-from config import DB_NAME, DB_HOST, DB_PASS, DB_PORT, DB_USER
+from config import settings
 
 
 str_256 = Annotated[str, 256]
@@ -31,7 +31,7 @@ class Base(DeclarativeBase):
 
 
 engine = create_async_engine(
-    url=f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
+    url=settings.DATABASE_URL_asyncpg,  # url=f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     echo=True
 )
 async_session_factory = async_sessionmaker(engine)

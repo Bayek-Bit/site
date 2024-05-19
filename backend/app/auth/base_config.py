@@ -6,11 +6,11 @@ from fastapi_users.authentication import AuthenticationBackend
 
 from auth.manager import get_user_manager
 from auth.models import User
-from config import SECRET_AUTH
+from config import settings
 
 cookie_transport = CookieTransport(cookie_name="bonds", cookie_max_age=3600, cookie_samesite="none")
 
-SECRET = SECRET_AUTH # dont even try :)
+SECRET = settings.SECRET_KEYS["SECRET_AUTH"]  # dont even try :)
 
 
 def get_jwt_strategy() -> JWTStrategy:

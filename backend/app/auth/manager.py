@@ -7,10 +7,10 @@ from fastapi_users import models, schemas, exceptions
 from auth.utils import get_user_db
 from auth.models import User
 
-from config import SECRET_USER_MANAGER
+from config import settings
 
 
-SECRET = SECRET_USER_MANAGER
+SECRET = settings.SECRET_KEYS.get("SECRET_USER_MANAGER")
 
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
